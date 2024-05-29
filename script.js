@@ -93,15 +93,15 @@
                             });
                             setTimeout(()=>{
                                 saveButton.click();
-
-                                if (wordManager.hasNextWord()) {
-                                    setTimeout(()=>{
+                                setTimeout(()=>{
+                                    if (wordManager.hasNextWord()) {
                                         console.log("Will save another word");
                                         modifyTextareaContent(chatgpt, wordManager);
-                                    }, 1000);
-                                } else {
-                                    console.log("=====  stopped no other words need to translate ======")
-                                }
+                                    } else {
+                                        console.log("=====  stopped no other words need to translate ======")
+                                        fillNoMoreWordInTextarea();
+                                    }
+                                }, 1000);
                             }, 1000);
                             break;
                         }
@@ -130,6 +130,16 @@
         }
     }
 
+    async function fillNoMoreWordInTextarea() {
+        const textarea = document.querySelectorAll('.tiptap.ProseMirror');
+        if (textarea) {
+            textarea[0].innerHTML = "(No more words, program stopped)";
+            console.log('Textarea content modified! 1');
+        } else {
+            console.log('Textarea not found! 1');
+        }
+    }
+
     function clickAddNewCard(chatgpt, wordManager) {
         const addNewCardButton = document.querySelector('.css-175oi2r.r-1i6wzkk.r-1loqt21.r-1otgn73.r-1awozwy.r-1777fci.r-1pz39u2.r-1xgx6zm.r-1i53x9q.r-18u37iz.r-h3s6tt.r-u9wvl5');
 
@@ -149,6 +159,7 @@
     window.addEventListener('load', () => {
         setTimeout(() => {
             const chatgpt = new ChatGPT('YOUR CHATGPT TOKEN'); // !!!!!
+
             const wordList = ['test'];  // !!!!!
             const wordShort = { // !!!!!
                 'hello': "你好(用於打招呼)"
@@ -156,6 +167,7 @@
             const wordSentence = { // !!!!!
                 'hello': "Paul says hello in the morning."
             };
+
             const wordManager = new WordManager(wordList, wordShort, wordSentence);
             clickAddNewCard(chatgpt, wordManager);
         }, 1000);
