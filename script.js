@@ -79,6 +79,19 @@
         }
     }
 
+    function convertToBold(text) {
+        return text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+    }
+    function convertToHeading(text) {
+        return text.replace(/^(#+)\s+(.*)$/gm, (match, hashes, content) => {
+            const level = hashes.length;
+            if (level >= 1 && level <= 6) {
+                return `<h${level}>${content}</h${level}>`;
+            }
+            return match;
+        });
+    }
+
     async function modifyTextareaContent(chatgpt, wordManager) {
         const textarea = document.querySelectorAll('.tiptap.ProseMirror');
         if (textarea) {
@@ -115,6 +128,7 @@
             const word = wordManager.getNextWord();
             textarea[0].innerHTML = word + " (writing explain please wait ....)";
             const explain = (await chatgpt.callChatGPT(word)).replace(/\n/g, '<br>');
+
             textarea[0].innerHTML = word;
 
             const short = wordManager.getWordShort(word);
@@ -123,6 +137,8 @@
             if ((short + setence).length != 0) {
                 answer = short + setence + "<br><br><br>" + explain;
             }
+            answer = convertToBold(answer);
+            answer = convertToHeading(answer);
             textarea[1].innerHTML = answer;
             console.log('Textarea content modified!');
         } else {
